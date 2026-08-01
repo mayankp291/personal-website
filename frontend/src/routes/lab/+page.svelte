@@ -1,6 +1,5 @@
 <script>
   import { onMount } from 'svelte';
-  import { PUBLIC_API_URL } from '$env/static/public';
 
   let state = 'loading';
   /** @type {null | {status: string, checked_at: string, services: Array<{name: string, status: string, detail: string, latency_ms: number | null}>}} */
@@ -10,7 +9,6 @@
   let lastError = '';
 
   function apiOrigin() {
-    if (PUBLIC_API_URL) return PUBLIC_API_URL;
     if (typeof window !== 'undefined' && ['localhost', '127.0.0.1'].includes(window.location.hostname)) {
       return 'https://api.mayankp.me';
     }
