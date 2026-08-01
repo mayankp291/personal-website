@@ -29,5 +29,5 @@
 <footer class="site-footer">
   <span>© {new Date().getFullYear()} Mayank Panjiyara</span>
   <span class="footer-status"><i></i> Systems nominal</span>
-  <a href="mailto:mayankp@u.nus.edu">mayankp@u.nus.edu ↗</a>
+  <a href="mailto:hi@mayankp.me">hi@mayankp.me ↗</a>
 </footer>

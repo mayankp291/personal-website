@@ -27,16 +27,13 @@
       <p class="hero-intro">I operate infrastructure at scale, automate the repetitive, and stay curious about what happens underneath the interfaces we use every day.</p>
       <a class="arrow-link" href="#about">Meet Mayank <span>↓</span></a>
     </div>
-    <div class="signal-grid" aria-hidden="true">
-      <span>data centers</span><strong>15+</strong><span>servers refreshed</span><strong>2.3k+</strong><span>hours saved / month</span><strong>100+</strong>
-    </div>
   </section>
 
   <section id="about" class="about-section section wrap">
     <div class="section-heading"><span class="eyebrow">About me</span><span class="section-count">01 / introduction</span></div>
     <div class="about-grid">
       <div class="portrait-frame"><img src="/me.gif" alt="Mayank Panjiyara" /></div>
-      <div class="about-copy"><span class="eyebrow">Let me introduce myself</span><h2>Hi, my name is <em>Mayank.</em></h2><p>I am an infrastructure engineer who likes servers, coffee, solving problems, and trying new things. I work across Windows, virtualization, cloud platforms, automation, and observability.</p><div class="contact-details"><a href="mailto:mayankp@u.nus.edu"><span>Email</span>mayankp@u.nus.edu ↗</a><a href="https://github.com/mayankp291"><span>GitHub</span>mayankp291 ↗</a><a href="https://www.linkedin.com/in/mayank-panjiyara"><span>LinkedIn</span>Mayank Panjiyara ↗</a></div><a class="resume-download" href="/resume.pdf" download>Download resume <span>↓</span></a></div>
+      <div class="about-copy"><span class="eyebrow">Let me introduce myself</span><h2>Hi, my name is <em>Mayank.</em></h2><p>I am an infrastructure engineer who likes servers, coffee, solving problems, and trying new things. I work across Windows, virtualization, cloud platforms, automation, and observability.</p><div class="contact-details"><a href="mailto:hi@mayankp.me"><span>Email</span>hi@mayankp.me ↗</a><a href="https://github.com/mayankp291"><span>GitHub</span>mayankp291 ↗</a><a href="https://www.linkedin.com/in/mayank-panjiyara"><span>LinkedIn</span>Mayank Panjiyara ↗</a></div><a class="resume-download" href="/resume.pdf" download>Download resume <span>↓</span></a></div>
     </div>
   </section>
 
@@ -77,6 +74,6 @@
   </section>
 
   <section id="contact" class="contact-section wrap">
-    <span class="eyebrow">Have a hard problem?</span><h2>Let's make it<br /><em>less mysterious.</em></h2><div class="contact-actions"><a class="contact-link" href="mailto:mayankp@u.nus.edu">mayankp@u.nus.edu <span>↗</span></a><a class="resume-link" href="/resume.pdf" download>Download resume <span>↓</span></a></div>
+    <span class="eyebrow">Have a hard problem?</span><h2>Let's make it<br /><em>less mysterious.</em></h2><div class="contact-actions"><a class="contact-link" href="mailto:hi@mayankp.me">hi@mayankp.me <span>↗</span></a><a class="resume-link" href="/resume.pdf" download>Download resume <span>↓</span></a></div>
   </section>
 </main>
