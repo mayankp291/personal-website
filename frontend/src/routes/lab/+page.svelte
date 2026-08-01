@@ -6,6 +6,8 @@
   let dashboard = null;
   /** @type {null | {hours: number, services: Array<{id: string, name: string, points: Array<{timestamp: string, status: string, latency_ms: number | null}>}>}} */
   let history = null;
+  /** @type {number | null} */
+  let visits = null;
   let lastError = '';
 
   function apiOrigin() {
@@ -17,13 +19,15 @@
 
   async function refresh() {
     try {
-      const [statusResponse, historyResponse] = await Promise.all([
+      const [statusResponse, historyResponse, visitsResponse] = await Promise.all([
         fetch(`${apiOrigin()}/api/v1/homelab/status`),
-        fetch(`${apiOrigin()}/api/v1/homelab/history?hours=24`)
+        fetch(`${apiOrigin()}/api/v1/homelab/history?hours=24`),
+        fetch(`${apiOrigin()}/api/v1/visits`)
       ]);
       if (!statusResponse.ok || !historyResponse.ok) throw new Error(`status ${statusResponse.status}`);
       dashboard = await statusResponse.json();
       history = await historyResponse.json();
+      if (visitsResponse.ok) visits = (await visitsResponse.json()).total;
       state = 'ready';
       lastError = '';
     } catch (error) {
@@ -69,7 +73,10 @@
   <p class="subpage-intro">A public, sanitized view of the systems behind this site. Checks run from the homelab and refresh every 30 seconds.</p>
 
   <section class="dashboard-summary" aria-live="polite">
-    <div class:summary-ok={dashboard?.status === 'operational'} class:summary-degraded={dashboard?.status === 'degraded'} class="summary-state"><span class="pulse"></span><strong>{state === 'loading' ? 'Checking systems' : dashboard?.status === 'operational' ? 'All systems operational' : state === 'error' ? 'Status unavailable' : 'Some systems need attention'}</strong><span class="status-meta">Checked {checkedTime()}</span></div>
+    <div class="summary-row">
+      <div class:summary-ok={dashboard?.status === 'operational'} class:summary-degraded={dashboard?.status === 'degraded'} class="summary-state"><span class="pulse"></span><strong>{state === 'loading' ? 'Checking systems' : dashboard?.status === 'operational' ? 'All systems operational' : state === 'error' ? 'Status unavailable' : 'Some systems need attention'}</strong><span class="status-meta">Checked {checkedTime()}</span></div>
+      <div class="visit-stat"><strong>{visits === null ? '—' : visits.toLocaleString()}</strong><span>total site visits</span></div>
+    </div>
     {#if state === 'error'}<p class="dashboard-error">The dashboard could not reach the status API ({lastError}).</p>{/if}
   </section>
 
@@ -100,12 +107,16 @@
   .architecture-link:hover { border-color: var(--acid); color: var(--acid); }
   .architecture-link span { margin-left: 18px; }
   .dashboard-summary { margin-top: 65px; }
+  .summary-row { display: flex; gap: 15px; }
   .summary-state { align-items: center; border: 1px solid var(--line); display: flex; gap: 10px; padding: 18px 20px; }
+  .visit-stat { align-items: end; border: 1px solid var(--line); display: flex; flex-direction: column; justify-content: center; min-width: 170px; padding: 14px 20px; }
+  .visit-stat strong { color: var(--acid); font-family: 'Space Grotesk'; font-size: 1.7rem; font-weight: 500; line-height: 1; }
+  .visit-stat span { color: var(--muted); font-family: 'DM Mono'; font-size: .58rem; margin-top: 7px; text-transform: uppercase; }
   .summary-ok { border-color: #52632a; }.summary-degraded { border-color: #80602b; }
   .summary-state .pulse { margin: 0; }.summary-degraded .pulse { background: #f0bd55; }.summary-state strong { font-family: 'Space Grotesk'; font-size: 1.1rem; font-weight: 500; }.status-meta { color: var(--muted); font-family: 'DM Mono'; font-size: .65rem; margin-left: auto; }
   .dashboard-error { color: #f0bd55; font-family: 'DM Mono'; font-size: .7rem; }
   .service-grid { display: grid; gap: 15px; grid-template-columns: repeat(3, 1fr); margin-top: 15px; }
   .service-card { border: 1px solid var(--line); min-height: 230px; padding: 24px; }.service-card:hover { background: #111820; border-color: #43515a; }.service-card-top { align-items: center; display: flex; gap: 9px; }.service-dot { background: var(--acid); border-radius: 50%; display: inline-block; height: 8px; width: 8px; }.service-bad { background: #f0bd55; }.service-state { color: var(--muted); font-family: 'DM Mono'; font-size: .6rem; text-transform: uppercase; }.service-card h2 { font-size: 1.7rem; margin: 45px 0 12px; }.service-card p { color: var(--muted); font-size: .85rem; line-height: 1.6; }.service-card footer { border-top: 1px solid var(--line); display: flex; font-family: 'DM Mono'; font-size: .62rem; justify-content: space-between; margin-top: 28px; padding-top: 14px; text-transform: uppercase; }.service-card footer span { color: var(--muted); }.service-card footer strong { color: var(--acid); font-weight: 400; }.loading-card { opacity: .55; }
   .uptime-section { margin-top: 85px; }.uptime-heading { align-items: center; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; padding-bottom: 14px; }.uptime-row { align-items: center; border-bottom: 1px solid var(--line); display: grid; gap: 30px; grid-template-columns: 160px 1fr 60px; padding: 22px 0; }.uptime-row h2 { font-size: 1rem; letter-spacing: -.03em; }.uptime-row div span { color: var(--muted); font-family: 'DM Mono'; font-size: .58rem; }.uptime-row svg { height: 54px; overflow: visible; width: 100%; }.uptime-row line { stroke: var(--line); stroke-width: 1; }.uptime-row polyline { fill: none; stroke: var(--acid); stroke-linecap: round; stroke-linejoin: round; stroke-width: 2; }.uptime-row strong { color: var(--acid); font-family: 'Space Grotesk'; font-size: 1.5rem; font-weight: 500; text-align: right; }.no-history { color: var(--muted); font-family: 'DM Mono'; font-size: .7rem; padding-top: 20px; }
-  @media (max-width: 700px) { .lab-title-row { align-items: start; flex-direction: column; gap: 35px; }.service-grid { grid-template-columns: 1fr; }.summary-state { align-items: start; flex-wrap: wrap; }.summary-state .status-meta { margin-left: 18px; width: 100%; }.uptime-row { gap: 15px; grid-template-columns: 105px 1fr 42px; }.uptime-row strong { font-size: 1rem; }.uptime-heading .section-count { display: none; } }
+  @media (max-width: 700px) { .lab-title-row { align-items: start; flex-direction: column; gap: 35px; }.service-grid { grid-template-columns: 1fr; }.summary-row { align-items: stretch; flex-direction: column; }.summary-state { align-items: start; flex-wrap: wrap; }.summary-state .status-meta { margin-left: 18px; width: 100%; }.visit-stat { align-items: start; min-width: 0; }.uptime-row { gap: 15px; grid-template-columns: 105px 1fr 42px; }.uptime-row strong { font-size: 1rem; }.uptime-heading .section-count { display: none; } }
 </style>

@@ -62,6 +62,7 @@ Endpoints:
 - `GET /api/v1/projects`
 - `GET /api/v1/homelab/status`
 - `GET /api/v1/homelab/history?hours=24`
+- `GET /api/v1/visits` / `POST /api/v1/visits` (visit counter, stored in PostgreSQL)
 - `GET /docs`
 
 The homelab status API probes the website API, Immich

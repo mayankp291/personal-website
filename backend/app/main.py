@@ -11,8 +11,9 @@ from datetime import timedelta
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from psycopg import Connection, connect as pg_connect
 from pydantic import BaseModel, Field
 
 
@@ -62,6 +63,10 @@ class HomelabHistory(BaseModel):
     services: list[ServiceHistory]
 
 
+class Visits(BaseModel):
+    total: int
+
+
 async def _status_sampler() -> None:
     while True:
         await asyncio.to_thread(_refresh_status_cache)
@@ -100,6 +105,27 @@ _status_cache_lock = Lock()
 _status_cache_ttl = 15
 _history_path = Path(getenv("STATUS_DB_PATH", "/tmp/mayank-status.db"))
 _homelab_host = getenv("HOMELAB_HOST", "host.containers.internal")
+
+
+def _pg_dsn() -> str:
+    return (
+        f"host={getenv('POSTGRES_HOST', 'personal-website-db')} "
+        f"port={getenv('POSTGRES_PORT', '5432')} "
+        f"dbname={getenv('POSTGRES_DB', 'postgres')} "
+        f"user={getenv('POSTGRES_USER', '')} "
+        f"password={getenv('POSTGRES_PASSWORD', '')}"
+    )
+
+
+def _pg_connect_with_schema() -> Connection:
+    connection = pg_connect(_pg_dsn(), autocommit=True)
+    connection.execute(
+        """CREATE TABLE IF NOT EXISTS visits (
+            id BIGSERIAL PRIMARY KEY,
+            visited_at TIMESTAMPTZ NOT NULL
+        )"""
+    )
+    return connection
 
 
 def _init_history() -> None:
@@ -251,3 +277,24 @@ def homelab_history(hours: int = 24) -> HomelabHistory:
             HistoryPoint(timestamp=datetime.fromisoformat(checked_at), status=status, latency_ms=latency_ms)
         )
     return HomelabHistory(hours=hours, services=list(grouped.values()))
+
+
+@app.post("/api/v1/visits", response_model=Visits, tags=["operations"])
+def record_visit() -> Visits:
+    try:
+        with _pg_connect_with_schema() as connection:
+            connection.execute("INSERT INTO visits (visited_at) VALUES (now())")
+            (total,) = connection.execute("SELECT COUNT(*) FROM visits").fetchone()
+    except Exception:
+        raise HTTPException(status_code=503, detail="visits store unavailable")
+    return Visits(total=total)
+
+
+@app.get("/api/v1/visits", response_model=Visits, tags=["operations"])
+def visit_count() -> Visits:
+    try:
+        with _pg_connect_with_schema() as connection:
+            (total,) = connection.execute("SELECT COUNT(*) FROM visits").fetchone()
+    except Exception:
+        raise HTTPException(status_code=503, detail="visits store unavailable")
+    return Visits(total=total)

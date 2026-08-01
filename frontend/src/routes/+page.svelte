@@ -25,7 +25,7 @@
     <h1>I keep critical<br /><em>systems moving.</em></h1>
     <div class="hero-bottom">
       <p class="hero-intro">I operate infrastructure at scale, automate the repetitive, and stay curious about what happens underneath the interfaces we use every day.</p>
-      <a class="arrow-link" href="#about">Meet Mayank <span>↓</span></a>
+      <div class="hero-actions"><a class="site-button" href="/architecture">How this site works <span>↗</span></a><a class="site-button site-button-blue" href="/lab">Live stats <span>↗</span></a></div>
     </div>
   </section>
 
