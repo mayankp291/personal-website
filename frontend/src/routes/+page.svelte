@@ -77,6 +77,6 @@
   </section>
 
   <section id="contact" class="contact-section wrap">
-    <span class="eyebrow">Have a hard problem?</span><h2>Let's make it<br /><em>less mysterious.</em></h2><a class="contact-link" href="mailto:mayankp@u.nus.edu">mayankp@u.nus.edu <span>↗</span></a>
+    <span class="eyebrow">Have a hard problem?</span><h2>Let's make it<br /><em>less mysterious.</em></h2><div class="contact-actions"><a class="contact-link" href="mailto:mayankp@u.nus.edu">mayankp@u.nus.edu <span>↗</span></a><a class="resume-link" href="/resume.pdf" download>Download resume <span>↓</span></a></div>
   </section>
 </main>

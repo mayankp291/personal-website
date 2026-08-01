@@ -19,6 +19,7 @@
     <a href="/#work">Work</a>
     <a href="/#experience">Experience</a>
     <a href="/#skills">Skills</a>
+    <a href="/resume.pdf" download>Resume <span aria-hidden="true">↓</span></a>
     <a class="nav-contact" href="/#contact">Let's talk <span aria-hidden="true">↗</span></a>
   </nav>
 </header>
