@@ -45,6 +45,11 @@
     </div>
   </section>
 
+  <section id="experience" class="section experience-section wrap">
+    <div class="section-heading"><span class="eyebrow">Experience</span><span class="section-count">Production systems / software / cloud</span></div>
+    <div class="experience-list">{#each experience as item}<article class="experience-card"><div class="experience-meta"><span>{item.period}</span><div class="impact-list">{#each item.impact as metric}<strong>{metric}</strong>{/each}</div></div><div class="experience-main"><h2>{item.role}</h2><p class="company">{item.company}</p><p>{item.detail}</p><div class="tags">{#each item.tags as tag}<span>{tag}</span>{/each}</div></div></article>{/each}</div>
+  </section>
+
   <section id="work" class="section wrap">
     <div class="section-heading"><span class="eyebrow">Selected work</span><span class="section-count">04 / projects</span></div>
     <div class="project-list">
@@ -59,14 +64,9 @@
     </div>
   </section>
 
-  <section id="experience" class="section experience-section wrap">
-    <div class="section-heading"><span class="eyebrow">Experience</span><span class="section-count">Production systems / software / cloud</span></div>
-    <div class="experience-list">{#each experience as item}<article class="experience-card"><div class="experience-meta"><span>{item.period}</span><div class="impact-list">{#each item.impact as metric}<strong>{metric}</strong>{/each}</div></div><div class="experience-main"><h2>{item.role}</h2><p class="company">{item.company}</p><p>{item.detail}</p><div class="tags">{#each item.tags as tag}<span>{tag}</span>{/each}</div></div></article>{/each}</div>
-  </section>
-
   <section class="education-section section wrap">
     <div class="section-heading"><span class="eyebrow">Education</span><span class="section-count">Singapore · 2020 — 2024</span></div>
-    <div class="education-card"><div><span class="eyebrow">National University of Singapore</span><h2>Bachelor's (Honours) in<br /><em>Computer Engineering.</em></h2></div><div><strong>GPA 4.09</strong><p>Advanced Computer Networks · Linux Kernel · Robotics · Data Structures and Algorithms · Real-Time Operating Systems · Parallel and Concurrent Computing</p></div></div>
+    <div class="education-card"><div><span class="eyebrow">National University of Singapore</span><h2>Bachelor's (Honours) in<br /><em>Computer Engineering.</em></h2></div><div><p>Advanced Computer Networks · Linux Kernel · Robotics · Data Structures and Algorithms · Real-Time Operating Systems · Parallel and Concurrent Computing</p></div></div>
   </section>
 
   <section id="skills" class="section skills-section wrap">
