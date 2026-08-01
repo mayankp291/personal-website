@@ -1,10 +1,5 @@
 <script>
-  const projects = [
-    { number: '01', title: 'Project RICE', term: 'Google Developer Society', detail: 'A scalable volunteer management platform that streamlines coordination and task assignment for a non-profit.', attribution: 'Modular MVC-style backend with TypeScript, Express.js, MongoDB, and REST APIs.', tags: ['TypeScript', 'Express.js', 'MongoDB'], href: null },
-    { number: '02', title: 'Geofencing', term: 'Engineering Society for Good', detail: 'A portable BLE GPS solution for real-time tracking of 100+ specially-abled students at Rainbow Centre School.', attribution: 'BLE 5.0 beacons, MQTT, AWS, Firebase, Python, and a cloud web application.', tags: ['Python', 'AWS', 'MQTT'], href: 'https://github.com/EGSC-NUS-Rainbow-Centre-IPS' },
-    { number: '03', title: 'LaserTag++', term: 'NUS Computer Engineering capstone', detail: 'A two-player laser tag game with AI hand actions, built as a five-person capstone team.', attribution: 'Multi-server communication across phones and game systems using TCP/IP, MQTT, threads, and queues.', tags: ['Python', 'TCP/IP', 'Concurrency'], href: 'https://github.com/mayankp291/CG4002-Capstone-LaserTag-Plus' },
-    { number: '04', title: 'Coding competitions', term: 'Selected builds', detail: 'Sixth place and Best Design at MindfulHacks 2021 for a mental-health app connecting psychologists and caregivers.', attribution: 'Semi-finalist at the NUS Blockchain Hackathon 2022 with an NFT creation website for non-technical users.', tags: ['Product design', 'Web', 'Hackathons'], href: null }
-  ];
+  import { projects } from '$lib/projects.js';
 
   const experience = [
     { period: 'Oct 2024 — present', role: 'Windows Infrastructure Engineer', company: 'Micron', detail: 'Manage Windows Server infrastructure across 15+ data centers in Asia and the USA, providing L3 escalation support for complex production issues.', impact: ['2,300+ servers refreshed', '600+ VMs migrated', '100+ hours saved / month'], tags: ['Windows Server', 'Nutanix', 'VMware', 'Splunk'] },
@@ -51,14 +46,14 @@
   </section>
 
   <section id="work" class="section wrap">
-    <div class="section-heading"><span class="eyebrow">Selected work</span><span class="section-count">04 / projects</span></div>
+    <div class="section-heading"><span class="eyebrow">Selected work</span><span class="section-count">05 / projects</span></div>
     <div class="project-list">
       {#each projects as project}
         <article class="project-card">
           <span class="project-number">{project.number}</span>
           <div><h2>{project.title} <small>{project.term}</small></h2><p>{project.detail}</p><p class="attribution">{project.attribution}</p></div>
           <div class="tags">{#each project.tags as tag}<span>{tag}</span>{/each}</div>
-          {#if project.href}<a class="card-arrow" href={project.href} target="_blank" rel="noreferrer" aria-label="View {project.title} on GitHub">↗</a>{:else}<span class="card-arrow muted-arrow">—</span>{/if}
+          <a class="card-arrow" href={`/projects/${project.slug}`} aria-label="Read about {project.title}">↗</a>
         </article>
       {/each}
     </div>
