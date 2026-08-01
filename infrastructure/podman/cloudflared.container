@@ -1,0 +1,17 @@
+[Unit]
+Description=Cloudflare Tunnel for mayankp.me
+After=personal-website-api.service
+Wants=personal-website-api.service
+
+[Container]
+Image=quay.io/cloudflare/cloudflared:latest
+ContainerName=personal-website-cloudflared
+Network=personal-website.network
+EnvironmentFile=%h/.config/personal-website/cloudflared.env
+Exec=tunnel --no-autoupdate run
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=default.target

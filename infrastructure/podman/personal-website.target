@@ -1,0 +1,7 @@
+[Unit]
+Description=Mayank personal website services
+Wants=personal-website-db.service personal-website-api.service
+After=personal-website-db.service personal-website-api.service
+
+[Install]
+WantedBy=default.target

@@ -1,0 +1,16 @@
+[Unit]
+Description=Personal website PostgreSQL database
+After=personal-website-network.service
+
+[Container]
+Image=docker.io/library/postgres:17-alpine
+ContainerName=personal-website-db
+Network=personal-website.network
+Volume=personal-website-db.volume:/var/lib/postgresql/data
+EnvironmentFile=%h/.config/personal-website/database.env
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=default.target

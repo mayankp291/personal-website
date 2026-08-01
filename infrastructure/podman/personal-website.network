@@ -1,0 +1,5 @@
+[Unit]
+Description=Personal website network
+
+[Network]
+NetworkName=personal-website
