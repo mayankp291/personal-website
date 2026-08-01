@@ -36,7 +36,7 @@
     <div class="section-heading"><span class="eyebrow">About me</span><span class="section-count">01 / introduction</span></div>
     <div class="about-grid">
       <div class="portrait-frame"><img src="/me.gif" alt="Mayank Panjiyara" /></div>
-      <div class="about-copy"><span class="eyebrow">Let me introduce myself</span><h2>Hi, my name is <em>Mayank.</em></h2><p>I am an infrastructure engineer who likes servers, coffee, solving problems, and trying new things. I work across Windows, virtualization, cloud platforms, automation, and observability.</p><div class="contact-details"><a href="mailto:mayankp@u.nus.edu"><span>Email</span>mayankp@u.nus.edu ↗</a><a href="https://github.com/mayankp291"><span>GitHub</span>mayankp291 ↗</a><a href="https://www.linkedin.com/in/mayank-panjiyara"><span>LinkedIn</span>Mayank Panjiyara ↗</a></div></div>
+      <div class="about-copy"><span class="eyebrow">Let me introduce myself</span><h2>Hi, my name is <em>Mayank.</em></h2><p>I am an infrastructure engineer who likes servers, coffee, solving problems, and trying new things. I work across Windows, virtualization, cloud platforms, automation, and observability.</p><div class="contact-details"><a href="mailto:mayankp@u.nus.edu"><span>Email</span>mayankp@u.nus.edu ↗</a><a href="https://github.com/mayankp291"><span>GitHub</span>mayankp291 ↗</a><a href="https://www.linkedin.com/in/mayank-panjiyara"><span>LinkedIn</span>Mayank Panjiyara ↗</a></div><a class="resume-download" href="/resume.pdf" download>Download resume <span>↓</span></a></div>
     </div>
   </section>
 

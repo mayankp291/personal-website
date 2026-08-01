@@ -13,6 +13,11 @@ The API is bound to localhost so Cloudflare Tunnel can be the only public
 entry point. The current bootstrap builds the image directly on the homelab;
 CI can publish the same image to GHCR once the deployment workflow is added.
 
+The API status dashboard probes Immich through
+`host.containers.internal:2283/api/server/ping` and checks PostgreSQL over the
+Podman network. Override `IMMICH_HEALTH_URL` in the backend environment if the
+Immich endpoint changes.
+
 ## Cloudflare Tunnel
 
 Create `~/.config/personal-website/cloudflared.env` on the homelab with the
