@@ -2,8 +2,6 @@ import asyncio
 from contextlib import asynccontextmanager, suppress
 from datetime import UTC, datetime
 from os import getenv
-from pathlib import Path
-from sqlite3 import connect
 from socket import create_connection
 from threading import Lock
 from time import monotonic
@@ -103,7 +101,6 @@ _status_cache: HomelabStatus | None = None
 _status_cache_time = 0.0
 _status_cache_lock = Lock()
 _status_cache_ttl = 15
-_history_path = Path(getenv("STATUS_DB_PATH", "/tmp/mayank-status.db"))
 _homelab_host = getenv("HOMELAB_HOST", "host.containers.internal")
 
 
@@ -117,7 +114,7 @@ def _pg_dsn() -> str:
     )
 
 
-def _pg_connect_with_schema() -> Connection:
+def _pg_connect() -> Connection:
     connection = pg_connect(_pg_dsn(), autocommit=True)
     connection.execute(
         """CREATE TABLE IF NOT EXISTS visits (
@@ -125,27 +122,21 @@ def _pg_connect_with_schema() -> Connection:
             visited_at TIMESTAMPTZ NOT NULL
         )"""
     )
+    connection.execute(
+        """CREATE TABLE IF NOT EXISTS service_checks (
+            service_id TEXT NOT NULL,
+            service_name TEXT NOT NULL,
+            checked_at TIMESTAMPTZ NOT NULL,
+            status TEXT NOT NULL,
+            latency_ms INTEGER
+        )"""
+    )
+    connection.execute(
+        "CREATE INDEX IF NOT EXISTS service_checks_time ON service_checks (checked_at)"
+    )
     return connection
 
 
-def _init_history() -> None:
-    _history_path.parent.mkdir(parents=True, exist_ok=True)
-    with connect(_history_path) as database:
-        database.execute(
-            """CREATE TABLE IF NOT EXISTS service_checks (
-                service_id TEXT NOT NULL,
-                service_name TEXT NOT NULL,
-                checked_at TEXT NOT NULL,
-                status TEXT NOT NULL,
-                latency_ms INTEGER
-            )"""
-        )
-        database.execute(
-            "CREATE INDEX IF NOT EXISTS service_checks_time ON service_checks (checked_at)"
-        )
-
-
-_init_history()
 _immich_health_url = getenv(
     "IMMICH_HEALTH_URL",
     f"http://{_homelab_host}:2283/api/server/ping",
@@ -205,14 +196,12 @@ def _build_homelab_status() -> HomelabStatus:
     ]
     overall = "operational" if all(service.status == "operational" for service in services) else "degraded"
     result = HomelabStatus(status=overall, checked_at=checked_at, services=services)
-    with connect(_history_path) as database:
-        database.executemany(
-            "INSERT INTO service_checks (service_id, service_name, checked_at, status, latency_ms) VALUES (?, ?, ?, ?, ?)",
-            [
-                (service.id, service.name, service.checked_at.isoformat(), service.status, service.latency_ms)
-                for service in services
-            ],
-        )
+    with _pg_connect() as connection:
+        for service in services:
+            connection.execute(
+                "INSERT INTO service_checks (service_id, service_name, checked_at, status, latency_ms) VALUES (%s, %s, %s, %s, %s)",
+                (service.id, service.name, service.checked_at, service.status, service.latency_ms),
+            )
     return result
 
 
@@ -263,18 +252,18 @@ def homelab_status() -> HomelabStatus:
 @app.get("/api/v1/homelab/history", response_model=HomelabHistory, tags=["operations"])
 def homelab_history(hours: int = 24) -> HomelabHistory:
     hours = max(1, min(hours, 168))
-    since = (datetime.now(UTC) - timedelta(hours=hours)).isoformat()
-    with connect(_history_path) as database:
-        rows = database.execute(
+    since = datetime.now(UTC) - timedelta(hours=hours)
+    with _pg_connect() as connection:
+        rows = connection.execute(
             """SELECT service_id, service_name, checked_at, status, latency_ms
-            FROM service_checks WHERE checked_at >= ? ORDER BY checked_at ASC""",
+            FROM service_checks WHERE checked_at >= %s ORDER BY checked_at ASC""",
             (since,),
         ).fetchall()
 
     grouped: dict[str, ServiceHistory] = {}
     for service_id, service_name, checked_at, status, latency_ms in rows:
         grouped.setdefault(service_id, ServiceHistory(id=service_id, name=service_name, points=[])).points.append(
-            HistoryPoint(timestamp=datetime.fromisoformat(checked_at), status=status, latency_ms=latency_ms)
+            HistoryPoint(timestamp=checked_at, status=status, latency_ms=latency_ms)
         )
     return HomelabHistory(hours=hours, services=list(grouped.values()))
 
@@ -282,7 +271,7 @@ def homelab_history(hours: int = 24) -> HomelabHistory:
 @app.post("/api/v1/visits", response_model=Visits, tags=["operations"])
 def record_visit() -> Visits:
     try:
-        with _pg_connect_with_schema() as connection:
+        with _pg_connect() as connection:
             connection.execute("INSERT INTO visits (visited_at) VALUES (now())")
             (total,) = connection.execute("SELECT COUNT(*) FROM visits").fetchone()
     except Exception:
@@ -293,7 +282,7 @@ def record_visit() -> Visits:
 @app.get("/api/v1/visits", response_model=Visits, tags=["operations"])
 def visit_count() -> Visits:
     try:
-        with _pg_connect_with_schema() as connection:
+        with _pg_connect() as connection:
             (total,) = connection.execute("SELECT COUNT(*) FROM visits").fetchone()
     except Exception:
         raise HTTPException(status_code=503, detail="visits store unavailable")

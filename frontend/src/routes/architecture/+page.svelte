@@ -45,10 +45,9 @@
       description: 'Rootless Podman containers driven by Quadlet user units. Data persists in named volumes; containers are disposable.',
       nodes: [
         { id: 'podnet', label: 'Podman network', detail: 'Private bridge', description: 'The rootless Podman network that connects containers to each other. Containers resolve each other by name over a private bridge — only the API\'s loopback port is published.', meta: [['driver', 'bridge'], ['dns', 'built-in'], ['publish', 'loopback only']], links: ['api', 'postgres', 'immich'] },
-        { id: 'api', label: 'FastAPI', detail: 'Status + content API', description: 'FastAPI under uvicorn serving the public endpoints. Status answers come from an in-memory cache refreshed by the sampler; CORS is locked to the site\'s own origins.', statusKey: 'website-api', meta: [['stack', 'uvicorn · FastAPI'], ['cache', '15s TTL'], ['cors', 'site origins only']], links: ['podnet', 'sampler', 'sqlite', 'postgres', 'immich'] },
-        { id: 'sampler', label: 'Status sampler', detail: 'Every 30 seconds', description: 'A background asyncio task collects health samples every 30 seconds: HTTP probes for Immich, TCP connect for PostgreSQL, and implicit availability for the API itself.', meta: [['cadence', 'every 30s'], ['writes', 'SQLite'], ['runtime', 'asyncio task']], links: ['api', 'sqlite'] },
-        { id: 'sqlite', label: 'SQLite', detail: 'Uptime history', description: 'Uptime history lives in a SQLite database at /data/status.db, mounted from the personal-website-status volume so it survives container rebuilds.', meta: [['path', '/data/status.db'], ['volume', 'personal-website-status'], ['format', 'service_checks']], links: ['api', 'sampler'] },
-        { id: 'postgres', label: 'PostgreSQL 17', detail: 'Persistent data', description: 'PostgreSQL 17 used today as the connectivity target for health checks; it will become the persistence layer for content. Never exposed beyond the private network.', statusKey: 'postgresql', meta: [['version', '17'], ['probe', 'TCP :5432'], ['reach', 'network-internal']], links: ['api', 'podnet'] },
+        { id: 'api', label: 'FastAPI', detail: 'Status + content API', description: 'FastAPI under uvicorn serving the public endpoints. Status answers come from an in-memory cache refreshed by the sampler; CORS is locked to the site\'s own origins.', statusKey: 'website-api', meta: [['stack', 'uvicorn · FastAPI'], ['cache', '15s TTL'], ['cors', 'site origins only']], links: ['podnet', 'sampler', 'postgres', 'immich'] },
+        { id: 'sampler', label: 'Status sampler', detail: 'Every 30 seconds', description: 'A background asyncio task collects health samples every 30 seconds: HTTP probes for Immich, TCP connect for PostgreSQL, and implicit availability for the API itself. Every sample is written to PostgreSQL.', meta: [['cadence', 'every 30s'], ['writes', 'PostgreSQL'], ['runtime', 'asyncio task']], links: ['api', 'postgres'] },
+        { id: 'postgres', label: 'PostgreSQL 17', detail: 'Persistent data', description: 'The persistence layer for the site: uptime samples from the status sampler, the visit counter, and future content. Never exposed beyond the private network.', statusKey: 'postgresql', meta: [['version', '17'], ['tables', 'service_checks · visits'], ['reach', 'network-internal']], links: ['api', 'sampler', 'podnet'] },
         { id: 'immich', label: 'Immich', detail: 'Photo library', description: 'Self-hosted photo library, reachable only inside the homelab network. The dashboard learns about it through a sanitized ping — never through application URLs.', statusKey: 'immich', meta: [['probe', 'GET /api/server/ping'], ['reach', 'network-internal'], ['status', 'sanitized']], links: ['api', 'podnet'] }
       ]
     }
@@ -64,7 +63,7 @@
 
   const traces = {
     page: ['browser', 'dns', 'pages'],
-    api: ['browser', 'dns', 'tunnel', 'cloudflared', 'api', 'sqlite']
+    api: ['browser', 'dns', 'tunnel', 'cloudflared', 'api', 'postgres']
   };
 
   let selected = $state(zones[0].nodes[0]);

@@ -14,9 +14,8 @@ browser
   ├── mayankp.me         Cloudflare Pages (static SvelteKit build)
   └── api.mayankp.me     Cloudflare Tunnel
                             └── homeserver (Podman, rootless)
-                                  ├── personal-website-api   FastAPI :8000
-                                  ├── personal-website-db    PostgreSQL 17
-                                  └── personal-website-status SQLite volume
+                          ├── personal-website-api   FastAPI :8000
+                          └── personal-website-db    PostgreSQL 17
 ```
 
 ## Repository layout
@@ -67,8 +66,8 @@ Endpoints:
 
 The homelab status API probes the website API, Immich
 (`/api/server/ping`), and PostgreSQL (TCP `:5432`). A background sampler
-collects status every 30 seconds into SQLite (mounted at `/data/status.db`
-via the `personal-website-status` volume).
+collects status every 30 seconds; samples and the visit counter are stored
+in PostgreSQL (`service_checks` and `visits` tables).
 
 The API intentionally returns only sanitized fields — no private
 addresses, container IDs, credentials, raw errors, or private application

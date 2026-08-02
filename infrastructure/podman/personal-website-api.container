@@ -7,7 +7,6 @@ Image=localhost/mayank-personal-website-api:latest
 ContainerName=personal-website-api
 Network=personal-website.network
 EnvironmentFile=%h/.config/personal-website/backend.env
-Volume=personal-website-status.volume:/data:U
 PublishPort=127.0.0.1:8000:8000
 HealthCmd=python healthcheck.py
 HealthInterval=30s
